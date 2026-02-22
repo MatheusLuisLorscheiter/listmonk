@@ -17,7 +17,9 @@ providers = ["go", "node"]
 # This avoids undefined-symbol errors like the earlier `go_1_24` issue.
 nixPkgs = [
   "...",
-  "nodejs-20_x",  # frontend build requires Node 20
+  # provider supplies a nodejs package (v18 at time of writing).
+  # If you truly need Node 20 you could pin the build image to a newer
+  # nixpkgs release or add the correct package name once available.
   "yarn",         # used by the make targets
   "git",          # frontend build references .gitignore
   "curl",         # scripts may fetch things with curl
