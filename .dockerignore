@@ -3,6 +3,8 @@
 **/.env
 **/.git
 **/.gitignore
+!/.gitignore
+!frontend/.gitignore
 **/.project
 **/.settings
 **/.toolstarget
