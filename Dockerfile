@@ -3,6 +3,8 @@ FROM node:20-alpine AS frontend-builder
 WORKDIR /app
 # copy the entire frontend first so that install scripts have all paths
 COPY frontend/ ./frontend/
+# ensure directory used by postinstall script exists
+RUN mkdir -p static/public/static
 RUN cd frontend && yarn install
 RUN cd frontend && yarn build
 
