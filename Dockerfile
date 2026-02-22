@@ -9,9 +9,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 WORKDIR /app
 COPY . .
 
-# Rodar o build (compila o frontend e o binário Go)
-# O listmonk usa 'make build' para gerar o executável com assets embutidos
-RUN make build
+# Build the project and embed all static assets (frontend, sql, etc.)
+# `make dist` runs the frontend build and packages everything into a single binary.
+RUN make dist
 
 # ETAPA 2: Imagem Final (Leve, baseada em Alpine)
 FROM alpine:latest
@@ -21,18 +21,11 @@ RUN apk --no-cache add ca-certificates tzdata shadow su-exec
 
 WORKDIR /listmonk
 
-# Copiar os arquivos gerados na etapa anterior
+# Copy the self-contained binary from builder and sample config
 COPY --from=builder /app/listmonk .
 COPY --from=builder /app/config.toml.sample config.toml
-COPY --from=builder /app/static ./static
-COPY --from=builder /app/i18n ./i18n
-COPY --from=builder /app/queries ./queries
-COPY --from=builder /app/schema.sql ./schema.sql
-COPY --from=builder /app/permissions.json ./permissions.json
 
-# include the compiled frontend assets (used by initFS/frontendDir)
-COPY --from=builder /app/frontend/dist ./frontend/dist
-
+# optional: copy entrypoint script
 COPY --from=builder /app/docker-entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
