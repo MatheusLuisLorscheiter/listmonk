@@ -1,26 +1,21 @@
+FROM golang:1.24-alpine AS builder
+RUN apk add --no-cache make nodejs npm yarn git
+WORKDIR /app
+COPY . .
+
+RUN make build-dist
+
 FROM alpine:latest
-
-# Install dependencies
 RUN apk --no-cache add ca-certificates tzdata shadow su-exec
-
-# Set the working directory
 WORKDIR /listmonk
 
-# Copy only the necessary files
-COPY listmonk .
-COPY config.toml.sample config.toml
+COPY --from=builder /app/listmonk .
+COPY --from=builder /app/config.toml.sample config.toml
+COPY --from=builder /app/static ./static
+COPY --from=builder /app/i18n ./i18n
+COPY --from=builder /app/docker-entrypoint.sh /usr/local/bin/
 
-# Copy the entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/
-
-# Make the entrypoint script executable
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-# Expose the application port
 EXPOSE 9000
-
-# Set the entrypoint
 ENTRYPOINT ["docker-entrypoint.sh"]
-
-# Define the command to run the application
 CMD ["./listmonk"]
