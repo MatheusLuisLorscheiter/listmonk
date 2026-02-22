@@ -9,20 +9,22 @@
 providers = ["go", "node"]
 
 [phases.setup]
-# Ensure the required toolchain is available during build.
-# go_1_24 matches the Go version used by the project (see Dockerfile).
-# nodejs-20_x is the Node 20 LTS series required by the frontend.
-# yarn is needed by the frontend build; git is pulled in because the
-# frontend build reads .gitignore and the make targets sometimes use git.
+# Extend the provider's default packages rather than replacing them.
+# The provider already pulls in Go and a Node runtime; we need to
+# bump Node to 20 and add some tooling.
+#
+# The "..." entry tells Nixpacks to keep whatever the provider supplied.
+# This avoids undefined-symbol errors like the earlier `go_1_24` issue.
 nixPkgs = [
-  "go_1_24",
-  "nodejs-20_x",
-  "yarn",
-  "git",
+  "...",
+  "nodejs-20_x",  # frontend build requires Node 20
+  "yarn",         # used by the make targets
+  "git",          # frontend build references .gitignore
+  "curl",         # scripts may fetch things with curl
 ]
 
-# The project uses curl when installing node in the existing Dockerfile,
-# so include it in case any scripts rely on it during `make dist`.
+# apt packages are still available for legacy commands executed by
+# make dist (the Dockerfile originally installed curl with apt).
 aptPkgs = ["curl"]
 
 [phases.build]
