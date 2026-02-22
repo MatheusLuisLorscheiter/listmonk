@@ -41,7 +41,10 @@ aptPkgs = ["curl"]
 cmds = [
   "cd frontend/email-builder && yarn install",
   "cd frontend && yarn install",
-  "make dist",
+  # `make dist` invokes yarn build which runs the `prebuild` script
+  # containing `eslint`. Linting errors would abort the build, so we
+  # disable lifecycle scripts here and rely on CI/linter during development.
+  "YARN_IGNORE_SCRIPTS=1 make dist",
 ]
 
 # Cache node modules between builds to speed up subsequent executions.
