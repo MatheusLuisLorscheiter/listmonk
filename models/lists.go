@@ -29,6 +29,12 @@ type List struct {
 	SubscriberCounts StringIntMap   `db:"subscriber_statuses" json:"subscriber_statuses"`
 	SubscriberID     int            `db:"subscriber_id" json:"-"`
 
+	// Default messenger (smtp configuration) to use for this list. Empty
+	// means the global default "email" messenger will be used. We only
+	// allow names that correspond to an email messenger (prefix
+	// "email").
+	DefaultMessenger string      `db:"default_messenger" json:"default_messenger,omitempty"`
+
 	// This is only relevant when querying the lists of a subscriber.
 	SubscriptionStatus    string    `db:"subscription_status" json:"subscription_status,omitempty"`
 	SubscriptionCreatedAt null.Time `db:"subscription_created_at" json:"subscription_created_at,omitempty"`

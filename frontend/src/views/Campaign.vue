@@ -743,6 +743,18 @@ export default Vue.extend({
   watch: {
     selectedLists() {
       this.form.lists = this.selectedLists;
+
+      // auto-select messenger if all chosen lists share the same default
+      const mset = new Set();
+      this.selectedLists.forEach(l => {
+        if (l.default_messenger) mset.add(l.default_messenger);
+      });
+      if (mset.size === 1) {
+        this.form.messenger = Array.from(mset)[0];
+      } else if (mset.size > 1) {
+        // mixed defaults => clear selection to force manual choice
+        this.form.messenger = '';
+      }
     },
 
     // eslint-disable-next-line func-names

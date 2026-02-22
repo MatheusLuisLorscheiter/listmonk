@@ -74,6 +74,10 @@
         </div>
       </b-table-column>
 
+      <b-table-column v-slot="props" field="default_messenger" :label="$t('lists.defaultSMTP')" header-class="cy-default_messenger" width="15%">
+        {{ props.row.default_messenger || '-' }}
+      </b-table-column>
+
       <b-table-column v-slot="props" field="type" :label="$t('globals.fields.type')" header-class="cy-type" sortable
         width="15%">
         <div class="tags">

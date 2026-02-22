@@ -62,13 +62,22 @@ func Initialize(opt Opt, tpls *template.Template, em *email.Emailer, lo *log.Log
 	}
 }
 
-// NotifySystem sends out an e-mail notification to the admin emails.
+// NotifySystem sends out an e-mail notification to the admin emails using
+// the default messenger (always "email" today).
 func NotifySystem(subject, tplName string, data any, hdr textproto.MIMEHeader) error {
 	return Notify(no.opt.SystemEmails, subject, tplName, data, hdr)
 }
 
-// Notify sends out an e-mail notification.
+// Notify sends out an e-mail notification using the global "email" messenger.
+// It is retained for backwards compatibility and simply delegates to
+// NotifyMessenger.
 func Notify(toEmails []string, subject, tplName string, data any, hdr textproto.MIMEHeader) error {
+	return NotifyMessenger("email", toEmails, subject, tplName, data, hdr)
+}
+
+// NotifyMessenger sends out an e-mail notification using the specified
+// messenger name. If messenger is empty, it falls back to "email".
+func NotifyMessenger(messenger string, toEmails []string, subject, tplName string, data any, hdr textproto.MIMEHeader) error {
 	if len(toEmails) == 0 {
 		return nil
 	}
@@ -82,8 +91,12 @@ func Notify(toEmails []string, subject, tplName string, data any, hdr textproto.
 
 	subject, body = GetTplSubject(subject, body)
 
+	if messenger == "" {
+		messenger = "email"
+	}
+
 	m := models.Message{
-		Messenger:   "email",
+		Messenger:   messenger,
 		ContentType: no.opt.ContentType,
 		From:        no.opt.FromEmail,
 		To:          toEmails,
@@ -94,7 +107,7 @@ func Notify(toEmails []string, subject, tplName string, data any, hdr textproto.
 
 	// Send the message.
 	if err := no.em.Push(m); err != nil {
-		no.lo.Printf("error sending admin notification (%s): %v", subject, err)
+		no.lo.Printf("error sending notification (%s) via %s: %v", subject, messenger, err)
 		return err
 	}
 

@@ -91,6 +91,20 @@ func (a *App) GetList(c echo.Context) error {
 	return c.JSON(http.StatusOK, okResp{out})
 }
 
+// helper: only allow empty or email-prefixed messengers that exist in app config.
+func (a *App) validateEmailMessenger(name string) bool {
+	if name == "" {
+		return true
+	}
+	for _, m := range a.messengers {
+		mn := m.Name()
+		if mn == name && strings.HasPrefix(mn, "email") {
+			return true
+		}
+	}
+	return false
+}
+
 // CreateList handles list creation.
 func (a *App) CreateList(c echo.Context) error {
 	l := models.List{}
@@ -101,6 +115,9 @@ func (a *App) CreateList(c echo.Context) error {
 	// Validate.
 	if !strHasLen(l.Name, 1, stdInputMaxLen) {
 		return echo.NewHTTPError(http.StatusBadRequest, a.i18n.T("lists.invalidName"))
+	}
+	if !a.validateEmailMessenger(l.DefaultMessenger) {
+		return echo.NewHTTPError(http.StatusBadRequest, a.i18n.T("lists.invalidDefaultMessenger"))
 	}
 
 	out, err := a.core.CreateList(l)
@@ -132,6 +149,9 @@ func (a *App) UpdateList(c echo.Context) error {
 	// Validate.
 	if !strHasLen(l.Name, 1, stdInputMaxLen) {
 		return echo.NewHTTPError(http.StatusBadRequest, a.i18n.T("lists.invalidName"))
+	}
+	if !a.validateEmailMessenger(l.DefaultMessenger) {
+		return echo.NewHTTPError(http.StatusBadRequest, a.i18n.T("lists.invalidDefaultMessenger"))
 	}
 
 	// Update the list in the DB.

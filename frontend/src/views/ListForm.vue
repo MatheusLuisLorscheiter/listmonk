@@ -44,6 +44,18 @@
           </b-select>
         </b-field>
 
+        <b-field :label="$t('lists.defaultSMTP')" label-position="on-border" :message="$t('lists.defaultSMTPHelp')">
+          <b-select v-model="form.default_messenger" name="default_messenger" :placeholder="$t('lists.defaultSMTPHelp')" expanded>
+            <option value="">—</option>
+            <option v-for="m in emailMessengers" :key="m" :value="m">
+              {{ m }}
+            </option>
+          </b-select>
+          <p v-if="form.default_messenger && !serverConfig.messengers.includes(form.default_messenger)" class="help is-danger">
+            {{ $t('lists.invalidDefaultMessenger') }}
+          </p>
+        </b-field>
+
         <b-field :label="$t('globals.terms.tags')" label-position="on-border">
           <b-taginput v-model="form.tags" name="tags" ellipsis icon="tag-outline"
             :placeholder="$t('globals.terms.tags')" />
@@ -97,6 +109,7 @@ export default Vue.extend({
         optin: 'single',
         status: 'active',
         tags: [],
+        default_messenger: '',
       },
     };
   },
@@ -129,7 +142,17 @@ export default Vue.extend({
   },
 
   computed: {
-    ...mapState(['loading', 'profile']),
+    ...mapState(['loading', 'profile', 'serverConfig']),
+
+    emailMessengers() {
+      // match serverConfig.messengers prefix
+      const arr = this.serverConfig.messengers.filter(m => m.startsWith('email'));
+      // if the form already has a value that's no longer in config, include it
+      if (this.form.default_messenger && !arr.includes(this.form.default_messenger)) {
+        arr.push(this.form.default_messenger);
+      }
+      return arr;
+    },
 
     isArchived: {
       get() {

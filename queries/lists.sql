@@ -53,7 +53,7 @@ SELECT id, uuid, type FROM lists WHERE
     END);
 
 -- name: create-list
-INSERT INTO lists (uuid, name, type, optin, status, tags, description) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id;
+INSERT INTO lists (uuid, name, type, optin, status, tags, description, default_messenger) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id;
 
 -- name: update-list
 WITH l AS (
@@ -64,6 +64,7 @@ WITH l AS (
         status=(CASE WHEN $5 != '' THEN $5::list_status ELSE status END),
         tags=$6::VARCHAR(100)[],
         description=(CASE WHEN $7 != '' THEN $7 ELSE description END),
+        default_messenger=(CASE WHEN $8 != '' THEN $8 ELSE default_messenger END),
         updated_at=NOW()
     WHERE id = $1
     RETURNING id, name

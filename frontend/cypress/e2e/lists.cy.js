@@ -26,7 +26,7 @@ describe('Lists', () => {
 
   it('Checks individual subscribers in lists', () => {
     const subs = [{ listID: 1, email: 'john@example.com' },
-      { listID: 2, email: 'anon@example.com' }];
+    { listID: 2, email: 'anon@example.com' }];
 
     // Click on each list on the lists page, go the subscribers page
     // for that list, and check the subscriber details.
@@ -46,6 +46,7 @@ describe('Lists', () => {
       cy.get('input[name=name]').clear().type(`list-${n}`);
       cy.get('select[name=type]').select('public');
       cy.get('select[name=optin]').select('double');
+      cy.get('select[name=default_messenger]').select('email');
       cy.get('input[name=tags]').clear().type(`tag${n}{enter}`);
       cy.get('textarea[name=description]').clear().type(`desc${n}`);
       cy.get('[data-cy=btn-save]').click();
@@ -98,8 +99,16 @@ describe('Lists', () => {
         cy.get(`${tr} td[data-label=Name]`).contains(name);
         cy.get(`${tr} td[data-label=Type] .tag[data-cy=type-${t}]`);
         cy.get(`${tr} td[data-label=Type] .tag[data-cy=optin-${o}]`);
+        cy.get(`${tr} td[data-label="Default SMTP messenger"]`).contains('-');
         n++;
       });
+    });
+  });
+
+  it('Default SMTP column shows selection after editing', () => {
+    // After editing each list above we selected "email" as the default messenger.
+    cy.get('tbody tr').each(($el) => {
+      cy.wrap($el).find('td[data-label="Default SMTP messenger"]').contains('email');
     });
   });
 

@@ -45,6 +45,7 @@ CREATE TABLE lists (
     status          list_status NOT NULL DEFAULT 'active',
     tags            VARCHAR(100)[],
     description     TEXT NOT NULL DEFAULT '',
+    default_messenger TEXT NULL,
 
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW()

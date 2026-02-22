@@ -3808,6 +3808,9 @@ components:
             type: string
         subscriber_count:
           type: integer
+        default_messenger:
+          type: string
+          description: "Messenger name to use as default for this list"
         description:
           type: string
 
@@ -3826,6 +3829,9 @@ components:
           type: array
           items:
             type: string
+        default_messenger:
+          type: string
+          description: "Messenger name (email only) to use for automatic emails involving this list"
         description:
           type: string
 

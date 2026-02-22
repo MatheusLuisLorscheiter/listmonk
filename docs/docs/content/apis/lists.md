@@ -153,14 +153,15 @@ Create a new list.
 
 ##### Parameters
 
-| Name        | Type       | Required | Description                                                        |
-| :---------- | :--------- | :------- | :----------------------------------------------------------------- |
-| name        | string     | Yes      | Name of the new list.                                              |
-| type        | string     | Yes      | Type of list. Options: private, public.                            |
-| optin       | string     | Yes      | Opt-in type. Options: single, double.                              |
-| status      | string     | No       | Status of the list. Options: active, archived. Defaults to active. |
-| tags        | string\[\] |          | Associated tags for a list.                                        |
-| description | string     | No       | Description of the new list.                                       |
+| Name              | Type       | Required | Description                                                        |
+| :---------------- | :--------- | :------- | :----------------------------------------------------------------- |
+| name              | string     | Yes      | Name of the new list.                                              |
+| type              | string     | Yes      | Type of list. Options: private, public.                            |
+| optin             | string     | Yes      | Opt-in type. Options: single, double.                              |
+| status            | string     | No       | Status of the list. Options: active, archived. Defaults to active. |
+| tags              | string\[\] |          | Associated tags for a list.                                        |
+| description       | string     | No       | Description of the new list.                                       |
+| default_messenger | string     | No       | Name of the messenger to use for automatic emails (email-only).    |
 
 ##### Example Request
 
@@ -196,15 +197,16 @@ Update a list.
 
 ##### Parameters
 
-| Name        | Type       | Required | Description                                    |
-| :---------- | :--------- | :------- | :--------------------------------------------- |
-| list_id     | number     | Yes      | ID of the list to update.                      |
-| name        | string     |          | New name for the list.                         |
-| type        | string     |          | Type of list. Options: private, public.        |
-| optin       | string     |          | Opt-in type. Options: single, double.          |
-| status      | string     |          | Status of the list. Options: active, archived. |
-| tags        | string\[\] |          | Associated tags for the list.                  |
-| description | string     |          | Description of the list.                       |
+| Name              | Type       | Required | Description                                       |
+| :---------------- | :--------- | :------- | :------------------------------------------------ |
+| list_id           | number     | Yes      | ID of the list to update.                         |
+| name              | string     |          | New name for the list.                            |
+| type              | string     |          | Type of list. Options: private, public.           |
+| optin             | string     |          | Opt-in type. Options: single, double.             |
+| status            | string     |          | Status of the list. Options: active, archived.    |
+| tags              | string\[\] |          | Associated tags for the list.                     |
+| description       | string     |          | Description of the list.                          |
+| default_messenger | string     |          | Default SMTP messenger for the list (email-only). |
 
 ##### Example Request
 

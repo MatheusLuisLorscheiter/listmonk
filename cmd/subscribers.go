@@ -728,8 +728,24 @@ func makeOptinNotifyHook(unsubHeader bool, u *UrlConfig, q *models.Queries, i *i
 			hdr.Set("List-Unsubscribe", `<`+unsubURL+`>`)
 		}
 
-		// Send the e-mail.
-		if err := notifs.Notify([]string{sub.Email}, i.T("subscribers.optinSubject"), notifs.TplSubscriberOptin, out, hdr); err != nil {
+// Determine messenger to use. If all lists share the same non-empty default,
+	// use it; otherwise fall back to global default.
+	chosenMessenger := ""
+	if len(lists) > 0 {
+		mset := map[string]struct{}{}
+		for _, l := range lists {
+			if l.DefaultMessenger != "" {
+				mset[l.DefaultMessenger] = struct{}{}
+			}
+		}
+		if len(mset) == 1 {
+			for m := range mset {
+				chosenMessenger = m
+			}
+		}
+	}
+
+	if err := notifs.NotifyMessenger(chosenMessenger, []string{sub.Email}, i.T("subscribers.optinSubject"), notifs.TplSubscriberOptin, out, hdr); err != nil {
 			lo.Printf("error sending opt-in e-mail for subscriber %d (%s): %s", sub.ID, sub.UUID, err)
 			return 0, err
 		}
