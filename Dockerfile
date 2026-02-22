@@ -1,9 +1,9 @@
 # ESTÁGIO 1: Build do Frontend (Interface)
 FROM node:20-alpine AS frontend-builder
 WORKDIR /app
-COPY frontend/package.json frontend/yarn.lock ./frontend/
-RUN cd frontend && yarn install
+# copy the entire frontend first so that install scripts have all paths
 COPY frontend/ ./frontend/
+RUN cd frontend && yarn install
 RUN cd frontend && yarn build
 
 # ESTÁGIO 2: Build do Backend (Go)
