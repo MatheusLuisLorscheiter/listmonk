@@ -27,6 +27,8 @@ COPY --from=builder /app/config.toml.sample config.toml
 COPY --from=builder /app/static ./static
 COPY --from=builder /app/i18n ./i18n
 COPY --from=builder /app/queries ./queries
+COPY --from=builder /app/schema.sql ./schema.sql
+COPY --from=builder /app/permissions.json ./permissions.json
 COPY --from=builder /app/docker-entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
