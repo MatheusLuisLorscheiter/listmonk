@@ -1,0 +1,51 @@
+# nixpacks.toml
+# Build configuration for the listmonk project using Nixpacks.
+# This repository contains a Go backend and a Vue/Node frontend.
+# The Makefile already knows how to compile everything and embed
+# all of the static assets into a single binary via `make dist`.
+
+# Providers are used to detect languages and pull in default
+# build plans.  Since we have both Go and Node code, include both.
+providers = ["go", "node"]
+
+[phases.setup]
+# Ensure the required toolchain is available during build.
+# go_1_24 matches the Go version used by the project (see Dockerfile).
+# nodejs-20_x is the Node 20 LTS series required by the frontend.
+# yarn is needed by the frontend build; git is pulled in because the
+# frontend build reads .gitignore and the make targets sometimes use git.
+nixPkgs = [
+  "go_1_24",
+  "nodejs-20_x",
+  "yarn",
+  "git",
+]
+
+# The project uses curl when installing node in the existing Dockerfile,
+# so include it in case any scripts rely on it during `make dist`.
+aptPkgs = ["curl"]
+
+[phases.build]
+# `make dist` handles the entire build: compiles the backend, runs both
+# frontends, and bundles assets into the binary via stuffbin.  When the
+# binary is built successfully, no additional files are required at runtime.
+cmds = [
+  "make dist",
+]
+
+# Cache node modules between builds to speed up subsequent executions.
+cacheDirectories = [
+  "frontend/node_modules",
+  "frontend/email-builder/node_modules",
+]
+
+[start]
+# When the image is run, simply execute the compiled binary.  In a
+# production deployment you can supply additional flags or environment
+# variables via Easypanel/railway/etc.
+cmd = "./listmonk"
+
+# Optionally specify a lightweight runtime image; the default is the
+# same as the build image.  We can leave it unset since the binary is
+# statically linked (CGO_ENABLED=0) and thus can run on alpine.
+# runImage = "alpine:latest"
