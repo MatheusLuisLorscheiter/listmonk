@@ -39,8 +39,11 @@ aptPkgs = ["curl"]
 # 'vite: not found' errors, run yarn install explicitly before invoking make.
 # The same applies to the main frontend.
 cmds = [
-  "cd frontend/email-builder && yarn install",
-  "cd frontend && yarn install",
+  # Ensure devDependencies (eslint, vite, etc.) are installed so the
+  # --fix lint step can run in the build image. Yarn defaults to
+  # production installs in some environments, so force dev deps too.
+  "cd frontend/email-builder && yarn install --production=false",
+  "cd frontend && yarn install --production=false",
   # Run eslint --fix to automatically correct simple lint issues so the
   # production build doesn't fail on stylistic problems. If fixes can't be
   # applied, continue (|| true) and let the build proceed; CI should surface
