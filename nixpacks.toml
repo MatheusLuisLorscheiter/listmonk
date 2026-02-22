@@ -48,7 +48,9 @@ cmds = [
   # production build doesn't fail on stylistic problems. If fixes can't be
   # applied, continue (|| true) and let the build proceed; CI should surface
   # remaining lint issues for developers to address.
-  "cd frontend && ./node_modules/.bin/eslint --ext .js,.vue --ignore-path .gitignore src --fix || true",
+  # Run lint autofix via yarn script so the project's eslint config is used.
+  # We run lint:fix here; CI should run lint:ci to enforce no remaining warnings.
+  "cd frontend && yarn run lint:fix || true",
   # Now run the full packaging target. Avoid disabling lifecycle scripts so
   # frontend build runs normally (we pre-fixed issues above).
   "make dist",

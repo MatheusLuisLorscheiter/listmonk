@@ -27,12 +27,6 @@ module.exports = {
       template: 200,
       comments: 200,
     }],
-    // The Airbnb config enables `prefer-destructuring` as an error which
-    // causes CI/builds to fail for older code that doesn't use
-    // destructuring everywhere. Relax this to a warning so linting is
-    // informational during builds while still surfacing suggestions to
-    // developers.
-    'prefer-destructuring': 'warn',
   },
   ignorePatterns: ['src/email-builder.js'],
 };

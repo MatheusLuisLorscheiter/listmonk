@@ -7,7 +7,8 @@
     "build": "vite build",
     "serve": "vite preview",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore src",
-    "prebuild": "eslint --ext .js,.vue --ignore-path .gitignore src",
+    "lint:fix": "eslint --ext .js,.vue --ignore-path .gitignore src --fix",
+    "lint:ci": "eslint --ext .js,.vue --ignore-path .gitignore src --max-warnings=0",
     "postinstall": "cp node_modules/altcha/dist/altcha.umd.cjs ../static/public/static/altcha.umd.js"
   },
   "dependencies": {
