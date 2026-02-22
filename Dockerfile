@@ -1,35 +1,21 @@
-# ETAPA 1: Builder (Usando Debian para evitar erros de ferramentas como grep/make)
-FROM golang:1.24 AS builder
-
-# Instalar Node.js e Yarn (necessários para o frontend do listmonk)
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install --global yarn
-
-WORKDIR /app
-COPY . .
-
-# Rodar o build (compila o frontend e o binário Go)
-# O listmonk usa 'make build' para gerar o executável com assets embutidos
-RUN make build
-
-# ETAPA 2: Imagem Final (Leve, baseada em Alpine)
 FROM alpine:latest
 
-# Instalar apenas dependências de runtime
+# Install dependencies
 RUN apk --no-cache add ca-certificates tzdata shadow su-exec
 
+# Set the working directory
 WORKDIR /listmonk
 
-# Copiar os arquivos gerados na etapa anterior
-COPY --from=builder /app/listmonk .
-COPY --from=builder /app/config.toml.sample config.toml
-COPY --from=builder /app/static ./static
-COPY --from=builder /app/i18n ./i18n
-COPY --from=builder /app/docker-entrypoint.sh /usr/local/bin/
+# Copy only the necessary files
+COPY listmonk .
+COPY config.toml.sample config.toml
+
+# Copy the entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# Expose the application port
 EXPOSE 9000
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["./listmonk"]
