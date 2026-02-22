@@ -33,7 +33,14 @@ aptPkgs = ["curl"]
 # `make dist` handles the entire build: compiles the backend, runs both
 # frontends, and bundles assets into the binary via stuffbin.  When the
 # binary is built successfully, no additional files are required at runtime.
+#
+# The email-builder make rule depends on the node_modules directory, which
+# may already exist as an empty folder because we mount the cache.  To avoid
+# 'vite: not found' errors, run yarn install explicitly before invoking make.
+# The same applies to the main frontend.
 cmds = [
+  "cd frontend/email-builder && yarn install",
+  "cd frontend && yarn install",
   "make dist",
 ]
 
